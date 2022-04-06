@@ -18,10 +18,12 @@ import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 
 import { Route,useHistory } from 'react-router';
 import Users from './users/users';
 import AddUser from './users/addUser';
+import AddTable from './addTable';
 
 
 
@@ -106,8 +108,10 @@ export default function Dashboard() {
   };
 
   const gotoUsers=()=>{
-    console.log("object");
     history.push('/dashboard/users')
+  }
+  const addTable=()=>{
+    history.push('/dashboard/add-table')
   }
 
   return (
@@ -147,6 +151,12 @@ export default function Dashboard() {
               </ListItemIcon>
               <ListItemText primary="Users" />
             </ListItem>
+            <ListItem button onClick={addTable} >
+              <ListItemIcon>
+                 <AddCircleOutlineOutlinedIcon /> 
+              </ListItemIcon>
+              <ListItemText primary="Add Table" />
+            </ListItem>
           
         </List>
         <Divider />
@@ -167,6 +177,7 @@ export default function Dashboard() {
 
         <Route path="/dashboard/users" component={Users} />
         <Route path="/dashboard/add-users" component={AddUser} />
+        <Route path="/dashboard/add-table" component={AddTable} />
         
         
         
