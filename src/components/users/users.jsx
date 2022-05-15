@@ -26,10 +26,10 @@ export default function Users(props) {
         sql:"SELECT * FROM users"
       }
       try {
-        let users=await userService.getUsers(body);
-        rows=users.data.data
-        console.log(users.data.data)
-        setRows(users.data.data)
+        let users=await userService.getUsers();
+        rows=users.data.users
+        console.log(users.data.users)
+        setRows(users.data.users)
       } catch (error) {
         console.log(error)
       }

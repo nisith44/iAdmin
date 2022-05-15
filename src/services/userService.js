@@ -2,8 +2,8 @@ import config from '../config.json'
 const axios = require('axios');
 
 
-function getUsers(body){
-    return  axios.post(config.baseUrl+'food/select',body)
+function getUsers(){
+    return  axios.get(config.baseUrl+'user/allusers')
 }
 
 export default {

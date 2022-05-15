@@ -9,6 +9,8 @@ import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import sqlService from '../services/sqlService';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 
 
@@ -19,11 +21,10 @@ export default function AddTable() {
     }]);
     const [tableName, setTableName] = useState('');
 
-    //const validator = new SimpleReactValidator();
+
     const validator = useRef(new SimpleReactValidator({
         element: message => <Alert style={{width:"50%"}} severity="error">{message}</Alert>
     }))
-    //const [, forceUpdate] = useState();
 
     useEffect(() => {
         
@@ -51,6 +52,24 @@ export default function AddTable() {
         setColumns(table)
     }
 
+    //alert functions
+    const [openAlert, setOpenAlert] = React.useState(false);
+    const [alertText, setAlertText] = React.useState('');
+    const [alertType, setAlertType] = React.useState('success');
+    function showAlert(type,text){
+        setAlertText(text);
+        setAlertType(type);
+        setOpenAlert(true);
+    }  
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setOpenAlert(false);
+    };
+
+
+    //create table
     async function createTable(){
         console.log(columns);
         let table=[...columns]
@@ -66,13 +85,36 @@ export default function AddTable() {
             sql:sqlString
           }
           try {
-            let result=await sqlService.runSQL(body);
-            //rows=users.data.data
+            let result=await sqlService.create(body);
+            if(result.data.status=='OK'){
+                addToTablesTable();
+            }else{
+                showAlert('error',result.data.error.sqlMessage);
+            }
             console.log(result)
-            //setRows(users.data.data)
           } catch (error) {
             console.log(error)
           }
+    }
+
+    //add to DB tables table
+    async function addToTablesTable(){
+        const sqlString=`INSERT INTO tables (name) VALUES ('${tableName}');`
+        let body={
+            sql:sqlString
+        }
+        try {
+            let result=await sqlService.insert(body);
+            console.log(result);
+            if(result.data.status=='OK'){
+                showAlert('success',"Table Successfully Created");
+            }
+            else{
+                showAlert('error',result.data.error.sqlMessage);
+            }
+        } catch (error) {
+            
+        }
     }
 
     function submitForm(e) {
@@ -129,7 +171,11 @@ export default function AddTable() {
                 
             </Card>
 
-            
+            <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity={alertType} variant='filled' sx={{ width: '100%' }}>
+                {alertText}
+                </Alert>
+            </Snackbar>
         </div>
     )
 }
