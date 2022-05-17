@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect,useState} from 'react'
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import MuiDrawer from '@mui/material/Drawer';
@@ -24,6 +24,8 @@ import { Route,useHistory } from 'react-router';
 import Users from './users/users';
 import AddUser from './users/addUser';
 import AddTable from './addTable';
+import sqlService from '../services/sqlService'
+import TableRecords from './tables/tableRecords';
 
 
 
@@ -96,8 +98,29 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 export default function Dashboard() {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const [tables, setTables] = useState([]);
   const history=useHistory();
+
+  useEffect(() => {
+    getTables();
+    
+  },[]);
+
+  async function getTables(){
+    let body={
+      sql:"SELECT * FROM tables"
+    }
+    try {
+      let result=await sqlService.select(body);
+      console.log(result.data.output);
+      setTables(result.data.output)
+      console.log(tables);
+    } catch (error) {
+      console.log(error)
+    }
+    
+  }
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -109,6 +132,10 @@ export default function Dashboard() {
 
   const gotoUsers=()=>{
     history.push('/dashboard/users')
+  }
+
+  const goToTable=(tableName)=>{
+    history.push('/dashboard/table/'+tableName)
   }
   const addTable=()=>{
     history.push('/dashboard/add-table')
@@ -161,12 +188,12 @@ export default function Dashboard() {
         </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
+          {tables.map((table, index) => (
+            <ListItem button key={table.name} onClick={()=>goToTable(table.name)}>
               <ListItemIcon>
                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
               </ListItemIcon>
-              <ListItemText primary={text} />
+              <ListItemText primary={table.name} />
             </ListItem>
           ))}
         </List>
@@ -178,10 +205,9 @@ export default function Dashboard() {
         <Route path="/dashboard/users" component={Users} />
         <Route path="/dashboard/add-users" component={AddUser} />
         <Route path="/dashboard/add-table" component={AddTable} />
+        <Route path="/dashboard/table/:tableName" component={TableRecords} />
         
         
-        
-       
       </Box>
     </Box>
   );

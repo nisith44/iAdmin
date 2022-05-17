@@ -14,6 +14,10 @@ function insert(body){
     return  axios.post(config.baseUrl+'sql/insert',body)
 }
 
+function select(body){
+    return  axios.post(config.baseUrl+'sql/select',body)
+}
+
 export default {
-    runSQL,create,insert
+    runSQL,create,insert,select
 };
