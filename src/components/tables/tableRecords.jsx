@@ -1,6 +1,6 @@
 import React, {useEffect,useState } from 'react'
 import { useHistory } from 'react-router';
-import EnhancedTable from '../table';
+import EnhancedTable from './table';
 import Button from '@mui/material/Button';
 import sqlService from '../../services/sqlService';
 const axios = require('axios');
@@ -8,6 +8,7 @@ const axios = require('axios');
 
 export default function TableRecords(props) {
   let [rows, setRows] = useState([]);
+  let [headCells, setHeadCells] = useState([]);
 
     const history = useHistory();
     const goto=()=>{
@@ -30,6 +31,7 @@ export default function TableRecords(props) {
         rows=result.data.output;
         setRows(result.data.output);
         console.log(rows);
+        createHeadCells();
       } catch (error) {
         console.log(error)
       }
@@ -68,7 +70,22 @@ export default function TableRecords(props) {
 
       console.log(rows)
 
-      const headCells = [
+      function createHeadCells(){
+        let columns=Object.keys(rows[1]);
+        let temp=[]
+        console.log(columns);
+        columns.forEach((col)=>{
+          temp.push({
+            id: col,
+            numeric: false,
+            disablePadding: false,
+            label: col
+          })
+        })
+        setHeadCells(temp)
+      }
+
+      const headCells1 = [
         {
           id: 'id',
           numeric: false,

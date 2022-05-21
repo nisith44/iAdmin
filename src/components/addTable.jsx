@@ -14,7 +14,7 @@ import MuiAlert, { AlertProps } from '@mui/material/Alert';
 
 
 
-export default function AddTable() {
+export default function AddTable(props) {
     const [columns, setColumns] = useState([{
         columnName:'',
         length:50
@@ -44,6 +44,7 @@ export default function AddTable() {
             length:50
         })
         setColumns(table)
+        console.log(props);
     }
 
     function removeCol(i){
@@ -108,6 +109,7 @@ export default function AddTable() {
             console.log(result);
             if(result.data.status=='OK'){
                 showAlert('success',"Table Successfully Created");
+                props.reloadEvent();
             }
             else{
                 showAlert('error',result.data.error.sqlMessage);

@@ -19,6 +19,8 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
+import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
 
 import { Route,useHistory } from 'react-router';
 import Users from './users/users';
@@ -140,6 +142,10 @@ export default function Dashboard() {
   const addTable=()=>{
     history.push('/dashboard/add-table')
   }
+  const reload = () => {
+    console.log("reload KKKKKKKKKKKKKKKKKKKKKKk");
+    getTables();
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -170,6 +176,7 @@ export default function Dashboard() {
           </IconButton>
         </DrawerHeader>
         <Divider />
+
         <List>
           
             <ListItem button onClick={gotoUsers} >
@@ -187,11 +194,17 @@ export default function Dashboard() {
           
         </List>
         <Divider />
+        <Typography
+        style={{textAlign:"left",marginLeft:"20px",marginTop:"5px"}}
+          variant="h6" id="tableTitle" component="div">
+          Tables
+        </Typography>
+
         <List>
           {tables.map((table, index) => (
             <ListItem button key={table.name} onClick={()=>goToTable(table.name)}>
               <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                {index % 2 === 0 ? <TableChartOutlinedIcon /> : <TableRowsOutlinedIcon />}
               </ListItemIcon>
               <ListItemText primary={table.name} />
             </ListItem>
@@ -204,7 +217,7 @@ export default function Dashboard() {
 
         <Route path="/dashboard/users" component={Users} />
         <Route path="/dashboard/add-users" component={AddUser} />
-        <Route path="/dashboard/add-table" component={AddTable} />
+        <Route path="/dashboard/add-table"  render={props => <AddTable reloadEvent = {reload} />} /> 
         <Route path="/dashboard/table/:tableName" component={TableRecords} />
         
         

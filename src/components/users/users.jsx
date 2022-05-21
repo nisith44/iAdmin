@@ -1,6 +1,6 @@
 import React, {useEffect,useState } from 'react'
 import { useHistory } from 'react-router';
-import EnhancedTable from '../table';
+import EnhancedTable from './table';
 import Button from '@mui/material/Button';
 import userService from '../../services/userService';
 const axios = require('axios');
