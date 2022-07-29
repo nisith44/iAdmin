@@ -21,6 +21,8 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';
 import TableRowsOutlinedIcon from '@mui/icons-material/TableRowsOutlined';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 import { Route,useHistory } from 'react-router';
 import Users from './users/users';
@@ -28,6 +30,8 @@ import AddUser from './users/addUser';
 import AddTable from './addTable';
 import sqlService from '../services/sqlService'
 import TableRecords from './tables/tableRecords';
+import AddRecord from './tables/addRecord';
+import EditRecord from './tables/editRecord';
 
 
 
@@ -111,7 +115,7 @@ export default function Dashboard() {
 
   async function getTables(){
     let body={
-      sql:"SELECT * FROM tables"
+      table:"tables"
     }
     try {
       let result=await sqlService.select(body);
@@ -142,8 +146,13 @@ export default function Dashboard() {
   const addTable=()=>{
     history.push('/dashboard/add-table')
   }
+  const goBack=()=>{
+    history.goBack();
+  }
+  const goForward=()=>{
+    history.goForward();
+  }
   const reload = () => {
-    console.log("reload KKKKKKKKKKKKKKKKKKKKKKk");
     getTables();
   };
 
@@ -163,6 +172,12 @@ export default function Dashboard() {
             }}
           >
             <MenuIcon />
+          </IconButton>
+          <IconButton onClick={goBack} >
+            <ArrowBackIcon style={{color:"fff"}} />
+          </IconButton>
+          <IconButton onClick={goForward} >
+            <ArrowForwardIcon style={{color:"fff"}} />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
             iAdmin
@@ -219,6 +234,8 @@ export default function Dashboard() {
         <Route path="/dashboard/add-users" component={AddUser} />
         <Route path="/dashboard/add-table"  render={props => <AddTable reloadEvent = {reload} />} /> 
         <Route path="/dashboard/table/:tableName" component={TableRecords} />
+        <Route path="/dashboard/add-record/:tableName" component={AddRecord} />
+        <Route path="/dashboard/edit-record/:tableName/:recordId" component={EditRecord} />
         
         
       </Box>

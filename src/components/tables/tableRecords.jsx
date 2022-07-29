@@ -3,7 +3,15 @@ import { useHistory } from 'react-router';
 import EnhancedTable from './table';
 import Button from '@mui/material/Button';
 import sqlService from '../../services/sqlService';
-const axios = require('axios');
+import RefreshIcon from '@mui/icons-material/Refresh';
+import IconButton from '@mui/material/IconButton';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
+import BackupTableOutlinedIcon from '@mui/icons-material/BackupTableOutlined';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
+import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined';
+import Tooltip from '@mui/material/Tooltip';
 
 
 export default function TableRecords(props) {
@@ -20,11 +28,11 @@ export default function TableRecords(props) {
       console.log(props);
       getRecords();
       
-    },[]);
+    },[props.match.params.tableName]);
 
     async function getRecords(){
       let body={
-        sql:`SELECT * FROM ${props.match.params.tableName}`
+        table:props.match.params.tableName
       }
       try {
         let result=await sqlService.select(body);
@@ -119,18 +127,61 @@ export default function TableRecords(props) {
         
       ];
 
-      const addUser=()=>{
-        history.push("/dashboard/add-users")
+      const addRecord=()=>{ 
+        history.push("/dashboard/add-record/"+props.match.params.tableName)
       }
+      
 
     return (
         <div >
             <div>
-            <Button style={{float:"left"}} onClick={addUser} variant="contained">ADD USER</Button>
+            <Button style={{float:"left",marginRight:"20px"}} onClick={addRecord} variant="contained">ADD {props.match.params.tableName}</Button>
+            <Tooltip title="Refresh Table">
+              <IconButton  >
+                <RefreshIcon/>
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Filters">
+              <IconButton  >
+                <FilterAltOutlinedIcon/>
+              </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Print">
+            <IconButton  >
+              <PrintOutlinedIcon/>
+            </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Download Exel">
+            <IconButton  >
+              <BackupTableOutlinedIcon/>
+            </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Import Table">
+            <IconButton  >
+              <CloudUploadOutlinedIcon/>
+            </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Download SQL File">
+            <IconButton  >
+              <CloudDownloadOutlinedIcon/>
+            </IconButton>
+            </Tooltip>
+            
+            <Tooltip title="Download PDF">
+            <IconButton  >
+              <PictureAsPdfOutlinedIcon/>
+            </IconButton>
+            </Tooltip>
+            
             </div>
 
             <div style={{float:"left",width:"100%",marginTop:"15px"}}>
-            <EnhancedTable  rows={rows} headCells={headCells} />
+            <EnhancedTable  rows={rows} headCells={headCells} tableName={props.match.params.tableName} />
             </div>
         </div>
     )

@@ -24,6 +24,16 @@ import { visuallyHidden } from '@mui/utils';
 import { textAlign } from '@mui/system';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import { useHistory } from 'react-router';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import sqlService from '../../services/sqlService';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -65,7 +75,7 @@ function EnhancedTableHead(props) {
     onRequestSort(event, property);
   };
   const headCells=props.headCells
-  console.log(headCells);
+
 
   return (
     <TableHead>
@@ -148,7 +158,7 @@ const EnhancedTableToolbar = (props) => {
           id="tableTitle"
           component="div"
         >
-          Users
+          {props.tableName}
         </Typography>
       )}
 
@@ -180,6 +190,10 @@ export default function EnhancedTable(props) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [deleteDialog, setDeleteDialog] = React.useState(false);
+  const [deleteRecordId, setDeleteRecordId] = React.useState('');
+
+  const history = useHistory();
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -189,7 +203,7 @@ export default function EnhancedTable(props) {
 
   const rows=props.rows;
   const headCells=props.headCells;
-  console.log(rows)
+  console.log(props)
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -239,10 +253,53 @@ export default function EnhancedTable(props) {
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
+  const editRecord=(id)=>{ 
+    history.push("/dashboard/edit-record/"+props.tableName+"/"+id)
+  }  
+
+  const openDeleteDialog=(id)=>{
+    setDeleteDialog(true);
+    setDeleteRecordId(id)
+  }
+  const closeDeleteDialog=()=>{
+    setDeleteDialog(false)
+  }
+  async function deleteRecord(){
+    console.log(deleteRecordId);
+    let body={
+      sql:`DELETE FROM ${props.tableName} WHERE id=${deleteRecordId};`
+    }
+    let result=await sqlService.deleteRecord(body);
+    console.log(result);
+    console.log(result.data.status);
+    if(result.data.status=="OK"){
+        showAlert('success',"Record Successfully Deleted")
+        closeDeleteDialog()
+    }else{
+        showAlert('error',result.data.error.sqlMessage);
+    }
+  }
+
+  //alert functions
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const [alertText, setAlertText] = React.useState('');
+  const [alertType, setAlertType] = React.useState('success');
+  function showAlert(type,text){
+      setAlertText(text);
+      setAlertType(type);
+      setOpenAlert(true);
+  } 
+  const handleClose = (event, reason) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setOpenAlert(false);
+  }; 
+
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar numSelected={selected.length} tableName={props.tableName} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -294,15 +351,19 @@ export default function EnhancedTable(props) {
                       >
                         {row.id}
                       </TableCell> */}
-                      <TableCell style={{textAlign:'left'}} align="right"> {row.id}</TableCell>
+
+                      {headCells.map((head, index) => (
+                          <TableCell style={{textAlign:'left'}} align="right"> {row[head.label]}</TableCell>   
+                      ))}
+                      {/* <TableCell style={{textAlign:'left'}} align="right"> {row.id}</TableCell>
                       <TableCell style={{textAlign:'left'}} align="right">{row[headCells[1]]}</TableCell>
                       <TableCell style={{textAlign:'left'}} align="right">{row.email}</TableCell>
-                      <TableCell style={{textAlign:'left'}} align="right">{row.password}</TableCell>
+                      <TableCell style={{textAlign:'left'}} align="right">{row.password}</TableCell> */}
                       <TableCell style={{textAlign:'left',padding:'0px'}} align="right">
-                      <IconButton >
+                      <IconButton onClick={()=>editRecord(row.id)}>
                         <EditOutlinedIcon />
                       </IconButton>
-                      <IconButton color='error'>
+                      <IconButton color='error' onClick={()=>openDeleteDialog(row.id)}>
                         <DeleteOutlineOutlinedIcon />
                       </IconButton>
                       </TableCell>
@@ -331,6 +392,30 @@ export default function EnhancedTable(props) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+
+      <Dialog
+        open={deleteDialog}
+        keepMounted
+        onClose={closeDeleteDialog}
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>{"Delete !!!"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">
+            Are you sure delete this record..?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={deleteRecord}>Yes Delete</Button>
+          <Button onClick={closeDeleteDialog}>No</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={openAlert} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity={alertType} variant='filled' sx={{ width: '100%' }}>
+          {alertText}
+        </Alert>
+      </Snackbar>
       
     </Box>
   );

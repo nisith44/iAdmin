@@ -7,17 +7,33 @@ function runSQL(body){
 }
 
 function create(body){
-    return  axios.post(config.baseUrl+'sql/create',body)
+    return  axios.post(config.baseUrl+'table/create',body)
 }
 
 function insert(body){
-    return  axios.post(config.baseUrl+'sql/insert',body)
+    return  axios.post(config.baseUrl+'table/insert',body)
 }
 
 function select(body){
-    return  axios.post(config.baseUrl+'sql/select',body)
+    return  axios.post(config.baseUrl+'table/select',body)
+}
+
+function update(body){
+    return  axios.post(config.baseUrl+'table/update',body)
+}
+
+function deleteRecord(body){
+    return  axios.post(config.baseUrl+'table/delete',body)
+}
+
+function getTableStructure(body){
+    return  axios.post(config.baseUrl+'table/get-table-structure',body)
+}
+
+function getSingle(body){
+    return  axios.post(config.baseUrl+'table/get-single',body)
 }
 
 export default {
-    runSQL,create,insert,select
+    runSQL,create,insert,select,update,deleteRecord,getTableStructure,getSingle
 };
