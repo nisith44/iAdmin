@@ -23,16 +23,25 @@ export default function AddRecord(props) {
             table:props.match.params.tableName
         }
         try {
-            let result=await sqlService.getTableStructure(body);
+            let result=await sqlService.describeTable(body);
+            console.log(result);
             let rows=result.data.output;
-            
-            let row1=rows[0]
-            var temp = Object.getOwnPropertyNames(row1);
-            for (var i = 0; i < temp.length; i++) {
-                row1[temp[i]]=""
-            }
-            setfeilds(row1)
-            let columns=Object.keys(rows[0]);            
+            let columns=[];
+            let tempObj={}
+            rows.forEach(row => {
+                columns.push(row.Field);
+                tempObj[row.Field]=""
+            });
+            console.log(columns);
+            console.log(tempObj);
+            // let row1=rows[0]
+            // var temp = Object.getOwnPropertyNames(row1);
+            // for (var i = 0; i < temp.length; i++) {
+            //     row1[temp[i]]=""
+            // }
+
+            setfeilds(tempObj)
+            //let columns=Object.keys(rows[0]);            
             setTextBoxs(columns)
             console.log(textBoxs);
             console.log(feilds) ;        

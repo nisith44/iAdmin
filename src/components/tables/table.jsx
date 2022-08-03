@@ -267,7 +267,8 @@ export default function EnhancedTable(props) {
   async function deleteRecord(){
     console.log(deleteRecordId);
     let body={
-      sql:`DELETE FROM ${props.tableName} WHERE id=${deleteRecordId};`
+      table:props.tableName,
+      id:deleteRecordId
     }
     let result=await sqlService.deleteRecord(body);
     console.log(result);

@@ -34,6 +34,14 @@ function getSingle(body){
     return  axios.post(config.baseUrl+'table/get-single',body)
 }
 
+function describeTable(body){
+    return  axios.post(config.baseUrl+'table/describe-table',body)
+}
+
+function createTable(body){
+    return  axios.post(config.baseUrl+'table/create-table',body)
+}
+
 export default {
-    runSQL,create,insert,select,update,deleteRecord,getTableStructure,getSingle
+    runSQL,create,insert,select,update,deleteRecord,getTableStructure,getSingle,describeTable,createTable
 };

@@ -83,10 +83,11 @@ export default function AddTable(props) {
         console.log(sqlString);
 
         let body={
-            sql:sqlString
+            table:tableName,
+            columns:columns
           }
           try {
-            let result=await sqlService.create(body);
+            let result=await sqlService.createTable(body);
             if(result.data.status=='OK'){
                 addToTablesTable();
             }else{
@@ -100,9 +101,9 @@ export default function AddTable(props) {
 
     //add to DB tables table
     async function addToTablesTable(){
-        const sqlString=`INSERT INTO tables (name) VALUES ('${tableName}');`
         let body={
-            sql:sqlString
+            table:"tables",
+            columns:{name:tableName}
         }
         try {
             let result=await sqlService.insert(body);
